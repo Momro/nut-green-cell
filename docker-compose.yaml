@@ -1,0 +1,35 @@
+services:
+  nut-upsd:
+    image: instantlinux/nut-upsd
+    container_name: nut-upsd
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      #- DRIVER=usbhid-ups
+      - DRIVER=nutdrv_qx # worked for me
+      - NAME=myups
+
+      # Optional: Vendor- / Product-ID, falls mehrere Geräte am Bus hängen
+      # (mit `lsusb` rausfinden, dann hier eintragen)
+      # - VENDORID=051d
+      # - PRODUCTID=0002
+
+      # Optional: Seriennummer, falls nötig
+      # - SERIAL=DEINE-SERIENNUMMER
+
+      # User / Passwort für NUT-API (upsmond, Clients etc.)
+      # these are the creds you will need to enter e.g. in Home Assistant integration
+      - API_USER=ups
+      - API_PASSWORD=addsomefancypassword
+
+      # Optional: Shutdown-Berechtigung
+      - MASTER_USER=adminuser
+      - MASTER_PASSWORD=supersecretdonttellanybody
+
+    devices:
+      # ganzen USB‑Bus durchreichen, damit NUT die UPS findet
+      - /dev/bus/usb:/dev/bus/usb
+
+    ports:
+      # NUT-Port für Clients (upsc, upsd usw.)
+      - "3493:3493"
